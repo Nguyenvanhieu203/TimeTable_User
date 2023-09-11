@@ -125,6 +125,23 @@ function ShowPassword() {
     }
 }
 
+function ShowChangePassword() {
+    var showPassword = document.getElementById("changePassword__show--password");
+    var passwordOld = document.getElementById("password__old");
+    var password = document.getElementById("passwordnew");
+    var Confirmpassword = document.getElementById("confirmpassword--new");
+    if(showPassword.checked) {
+        passwordOld.type = "text";
+        password.type = "text";
+        Confirmpassword.type = "text";
+    }
+    else {
+        passwordOld.type = "password";
+        password.type = "password";
+        Confirmpassword.type = "password";
+    }
+}
+
 
 function ShowchangPassword() {
     var information = document.getElementById("information");

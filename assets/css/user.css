@@ -236,7 +236,7 @@ input {
 }
 
 .schedule__body--regesting {
-    padding-left: 80px;
+    /* padding-left: 80px; */
 }
 
 .register__schedule--search input {
@@ -258,7 +258,7 @@ input {
 }
 
 .icon__shceduling--register {
-    left: 441px !important;
+    /* left: 441px !important; */
 }
 
 .register__schedule--search i:hover {

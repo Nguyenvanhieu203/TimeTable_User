@@ -30,7 +30,7 @@ function login() {
         localStorage.setItem("fullname",namelogin);
         localStorage.setItem("email",data.email);
         localStorage.setItem("avata",data.avata);
-        if(username == data.email && password == data.password) {
+        if(data.status === "Thành công") {
             window.location.href = "main_user.html";
         }
         else {
@@ -112,6 +112,7 @@ function login() {
   }
 
 function getInformation() {
+    CheckToken();
     const getInforUrl = "https://localhost:7013/api/Users/Info";
 
     fetch(`${getInforUrl}?email=${localStorage.getItem("email")}`, {
@@ -174,6 +175,7 @@ function getInformation() {
 }
 
 function ChangeInformation() {
+    CheckToken();
     const changeInforUrl = "https://localhost:7013/api/EditAccount";
     const changeFirstName = document.getElementById("Change__firstName").value; 
     const changeLastName = document.getElementById("Change_lastName").value; 
@@ -344,7 +346,7 @@ function displayDataAndPaginationManagerAccount(data, currentPage) {
 
 // Hàm gọi API ban đầu và hiển thị dữ liệu
 async function GetAllManagerAccountForSchedule(pageIndex) {
-
+    CheckToken();
     // Gọi API ban đầu với số trang pageIndex
     if (!dataLoaded) {
         await fetchApiWithPageNumberManagerAccount(pageIndex);
@@ -470,6 +472,7 @@ function displayDataAndPaginationSearchAccount(data, currentPage) {
 
 // Hàm gọi API ban đầu và hiển thị dữ liệu
 async function GetAllSearchAccountForSchedule(pageIndex) {
+    CheckToken() ;
     //Hiển thị
     var areaRegisterSchedule = document.getElementById("Schedule");
     var information = document.getElementById("information");
@@ -550,6 +553,7 @@ async function GetAllSearchAccountForSchedule(pageIndex) {
 }
 
 function registerSchedule(IdSchedure, Course_Code, button) {
+    CheckToken() ;
     var token = localStorage.getItem("login");
     const loginUrl = `https://localhost:7013/api/LectureSchedule?token=${token}&IdSchedure=${IdSchedure}&Course_Code=${Course_Code}`;
     if(window.confirm("Bạn có chắc chắn muốn đăng ký lớp học này không?")) {
@@ -569,6 +573,8 @@ function registerSchedule(IdSchedure, Course_Code, button) {
         .then((data) => {
           if(data.statusCode === 400) {
               alert("Đăng ký không thành công");
+              alert(data.result);
+              console.log(data);
           }
           else if(data.statusCode === 200) {
               alert("Đăng ký thành công");
@@ -683,7 +689,7 @@ function displayDataAndPaginationManagerRegisted(data, currentPage) {
 
         button.addEventListener("click", () => {
             pageIndexManagerRegisted = i;
-            fetchApiWithPageNumberManagerRegisted(pageIndexManagerAccount);
+            fetchApiWithPageNumberManagerRegisted(pageIndexManagerRegisted);
         });
 
         paginationContainer.appendChild(button);
@@ -694,7 +700,7 @@ function displayDataAndPaginationManagerRegisted(data, currentPage) {
 
 // Hàm gọi API ban đầu và hiển thị dữ liệu
 async function GetAllManagerRegistedForSchedule(pageIndex) {
-
+    CheckToken();
     // Gọi API ban đầu với số trang pageIndex
     if (!dataLoadedRegisted) {
         await fetchApiWithPageNumberManagerRegisted(pageIndex);
@@ -816,6 +822,7 @@ function displayDataAndPaginationSearchRegisted(data, currentPage) {
 
 // Hàm gọi API ban đầu và hiển thị dữ liệu
 async function GetAllSearchRegistedForSchedule(pageIndex) {
+    CheckToken();
     //Hiển thị
     var areaRegistedSchedule = document.getElementById("ScheduleRegisted");
     var areaRegisterSchedule = document.getElementById("Schedule");
@@ -892,5 +899,30 @@ async function GetAllSearchRegistedForSchedule(pageIndex) {
         }
     }
     
+}
+
+
+function CheckToken() {
+    // Lấy token từ lưu trữ, ví dụ localStorage hoặc sessionStorage
+    var token = localStorage.getItem('login');
+
+    if (token) {
+        // Giải mã token để truy cập thông tin thời gian hết hạn
+        var tokenData = JSON.parse(atob(token.split('.')[1]));
+        
+        // Lấy thời gian hết hạn từ token
+        var expirationTime = tokenData.exp * 1000; // Do token lưu thời gian dưới dạng giây
+        
+        // Kiểm tra xem token đã hết hạn chưa
+        var currentTime = Date.now();
+        
+        if (currentTime > expirationTime) {
+            // Token đã hết hạn, thực hiện đăng xuất người dùng ở đây
+            // Có thể thực hiện logout bằng cách xóa token và chuyển người dùng về trang đăng nhập
+            alert("Phiên làm việc của bạn đã hết hạn, vui lòng đăng nhập lại");
+            DeleteLocalStorage();
+            window.location.href = 'index.html'; // Chuyển hướng người dùng đến trang đăng nhập
+        } 
+    } 
 }
   
